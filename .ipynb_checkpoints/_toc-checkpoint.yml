@@ -1,0 +1,13 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: 0.intro
+chapters:
+- file: 1.fmri-structure
+- file: 2.motion
+- file: 3.slice-timing
+- file: 4.normalisation
+- file: 5.smoothing
+- file: 6.building-pipelines
+- file: 7.preprocessing-code
