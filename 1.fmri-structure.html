@@ -232,7 +232,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+      <li><a href="https://github.com/martynmcfarquhar/NCCN-IA-fMRIPreProcessing" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -249,7 +249,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2F1.fmri-structure.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/martynmcfarquhar/NCCN-IA-fMRIPreProcessing/issues/new?title=Issue%20on%20page%20%2F1.fmri-structure.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -372,6 +372,9 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-images">4D images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-dataset">Example dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-need-for-pre-processing">The need for pre-processing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-processing-preliminaries">Pre-processing preliminaries</a></li>
 </ul>
             </nav>
         </div>
@@ -390,7 +393,43 @@ document.write(`
 <h2>4D images<a class="headerlink" href="#d-images" title="Permalink to this heading">#</a></h2>
 <p>At its most basic, an fMRI dataset is a collecting of 3D volumes of the brain that were collected in rapid succession. The speed at which we collect these volumes is given by the TR of sequence, and is usually around 2-3 seconds. This gives the temporal resolution of the data. Together, these 3D images form a 4D dataset, where we have three spatial dimensions and a fourth dimension of time. As we move through these 3D volumes we see how the BOLD signal changed over the course of the experiment. Importantly, each of these 3D volumes is collected while the subject is engaged with some sort of cognitive task in the scanner. What these tasks look like and how we use them is the focus of the Experimental Design and Optimisation unit. For the purposes of this lesson, just know that the subject was doing something while in the scanner. Our broad purpose in analysing the data is to try and match changes in the BOLD signal over time with changes in the different conditions of this experimental task.
 The fMRI timeseries</p>
-<p>Each of the 3D volumes that make up an fMRI dataset can be thought of as a snapshot in time, indicating the values of the BOLD signal at that precise moment. A typical fMRI scan may amass around 200 of these snapshots. For each voxel in the image, we can see how the signal at that point in the image changed over time by looking at how its value shifts across all the 3D volumes. For a scan with 200 volumes, we therefore have 200 values for each voxel in the image documenting how the BOLD signal changed over the course of the experiment. This sequence of values is known as the fMRI timeseries. The timeseries at each voxel represents the raw data that we will subject to statistical analysis to try and discern patterns that map on to the pattern of the experimental conditions. For now, just consider the scale of this data. A typical fMRI volume may have dimensions <span class="math notranslate nohighlight">\(60 \times 60 \times 40\)</span> with 200 datapoints at each voxel. This gives over 28 million data points in a single fMRI dataset. An example of the timeseries for 3 voxels is given below.</p>
+<p>Each of the 3D volumes that make up an fMRI dataset can be thought of as a snapshot in time, indicating the values of the BOLD signal at that precise moment. A typical fMRI scan may amass around 200 of these snapshots. For each voxel in the image, we can see how the signal at that point in the image changed over time by looking at how its value shifts across all the 3D volumes. For a scan with 200 volumes, we therefore have 200 values for each voxel in the image documenting how the BOLD signal changed over the course of the experiment. This sequence of values is known as the fMRI timeseries. The timeseries at each voxel represents the raw data that we will subject to statistical analysis to try and discern patterns that map on to the pattern of the experimental conditions. For now, just consider the scale of this data. A typical fMRI volume may have dimensions <span class="math notranslate nohighlight">\(60 \times 60 \times 40\)</span> with 200 datapoints at each voxel. This gives over 28 million data points in a single fMRI dataset. An example of the timeseries for 3 voxels is shown in <a class="reference internal" href="#timeseries-fig"><span class="std std-numref">Fig. 1</span></a>.</p>
+<figure class="align-default" id="timeseries-fig">
+<a class="reference internal image-reference" href="_images/timeseries.png"><img alt="_images/timeseries.png" src="_images/timeseries.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Illustration of how each voxel in a functional image is associated with a timeseries of BOLD signal change.</span><a class="headerlink" href="#timeseries-fig" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="example-dataset">
+<h2>Example dataset<a class="headerlink" href="#example-dataset" title="Permalink to this heading">#</a></h2>
+<p>You can get more of a feel for the structure of fMRI data by downloading the functional and structural files we will be using as examples in this lesson. The video below will show you how to explore this dataset using the SPM facilities for displaying a series of images as a movie, as well as viewing the timeseries at each voxel.</p>
+<p>VIDEO HERE</p>
+</section>
+<section id="the-need-for-pre-processing">
+<h2>The need for pre-processing<a class="headerlink" href="#the-need-for-pre-processing" title="Permalink to this heading">#</a></h2>
+<p>This lesson is all about the image processing techniques we use to get our fMRI data ready for statistical analysis. These steps are collectively known as pre-processing, and are needed to get round the various issues that make raw fMRI unsuitable for analysis. Before getting into the details of these issues, examination of the raw fMRI timeseries can actually gives us some intuition about why pre-processing is needed. First of all, consider the GIF in <a class="reference internal" href="#functional-flicker-fig"><span class="std std-numref">Fig. 2</span></a>, that shows a set of fMRI volumes being scrolled through as an animation. Notice the characteristic flickering that occurs, which is more noticeable in some voxels compared to others. This flickering represents changes in signal intensity over time. In other words, it represents signal variance, the degree to which the signal moves around over time.</p>
+<figure class="align-default" id="functional-flicker-fig">
+<a class="reference internal image-reference" href="_images/functional-flicker.gif"><img alt="_images/functional-flicker.gif" src="_images/functional-flicker.gif" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Illustration of the variance at each voxel over time.</span><a class="headerlink" href="#functional-flicker-fig" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>This variance is the most basic information the signal contains, and is the element that we want to try and associate with our experiment. In other words, we want our experiment to cause changes in the value of the signal. Unfortunately, there are many other reasons why the signal may be changing over time, other than true hemodynamic changes associated with our experiment. These reasons could relate to noise from the scanner, motion from the subject or other aspects of physiology not connected to blood flow. Whatever the reasons, we really want to minimise the extent to which the signal variance is attributable to sources other than our experimental manipulation. This is why, in part, we need pre-processing to help clean the data, to make it possible to see the changes we want to see and minimise everything else.</p>
+<p>Beyond minimising sources of noise and additional variance, pre-processing also aims to address a fundamental difficulty with multi-subject fMRI studies, namely that everyone’s brain is a different shape and size. This anatomical variability can be substantial, as shown in <a class="reference internal" href="#anat-var-fig"><span class="std std-numref">Fig. 3</span></a>, and causes issues with the analysis and localisation of groups of scans. So unless you are only performing an analysis on a single individual, this needs to be addressed. We already discussed the principles of normalisation in Functional Neuroanatomy, and the idea here are the same, just applied to functional data instead of structural. So the other aim of pre-processing is therefore to get all functional data from all subjects into the same space, to allow for localisation of results and the analysis of groups of scans.</p>
+<figure class="align-default" id="anat-var-fig">
+<a class="reference internal image-reference" href="_images/anat-var.png"><img alt="_images/anat-var.png" src="_images/anat-var.png" style="width: 800px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 3 </span><span class="caption-text">Illustration of the variability in anatomy across different individuals.</span><a class="headerlink" href="#anat-var-fig" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="pre-processing-preliminaries">
+<h2>Pre-processing preliminaries<a class="headerlink" href="#pre-processing-preliminaries" title="Permalink to this heading">#</a></h2>
+<p>Before diving into the standard pre-processing steps, there is some housekeeping to do. Firstly, it is always better to work on copies of your data rather than the original files. Not only does this make it easier to delete everything and start over if there are problems, but SPM can also make some invisible changes to the image headers that you may want to remove before starting again. Working with new copies each time is the easiest way to do this. SPM also makes a lot of new files during pre-processing and so it is useful to create a new folder to keep things organised. As such, the first step is often to make a new folder and then make copies of the images for processing inside that folder.</p>
+<p>The next thing we need to do is to look at the default registration between our functional and structural images. Many of the pre-processing steps we use are based on image registration and, as we discussed during Functional Neuroanatomy, we can help the registration algorithms by doing some rough manual alignment to start with. So, for our example data, we can first set the origins of the functional and structural scans to the anterior commissure, and then make any adjustments we need to bring them into better registration before we begin.</p>
+<p>Both of these preliminary steps are demonstrated in the video below.</p>
+<p>VIDEO HERE</p>
 </section>
 </section>
 
@@ -458,6 +497,9 @@ The fMRI timeseries</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-images">4D images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-dataset">Example dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-need-for-pre-processing">The need for pre-processing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-processing-preliminaries">Pre-processing preliminaries</a></li>
 </ul>
   </nav></div>
 
