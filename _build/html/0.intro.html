@@ -229,7 +229,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+      <li><a href="https://github.com/martynmcfarquhar/NCCN-IA-fMRIPreProcessing" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -246,7 +246,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2F0.intro.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/martynmcfarquhar/NCCN-IA-fMRIPreProcessing/issues/new?title=Issue%20on%20page%20%2F0.intro.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -345,7 +345,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
 </div></div>
       
     </div>
@@ -361,6 +363,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -372,8 +382,22 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">#</a></h1>
+<p>This lesson is all about the steps we have to take to process our images before we can subject them to statistical analysis. These steps are known as pre-processing, and consist of several options for getting our raw fMRI data into suitable shape for analysis. In this lesson, we will go through all the major steps that are performed, discussing the theory of each, when you would use them and how they are implemented in SPM. At the end, we will discuss some of the choices you need to make about which steps to use as well as providing some guidance on what to do in different scenarios.</p>
+<section id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="1.fmri-structure.html">The Structure of fMRI Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2.motion.html">Step 1: Motion Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3.slice-timing.html">Step 2: Slice-Timing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4.normalisation.html">Step 3: Normalisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="5.smoothing.html">Step 4: Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="6.building-pipelines.html">Building the Preprocessing Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7.preprocessing-code.html">Running Preprocessing Using MATLAB Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="8.summary-quiz.html">Summary and Quiz</a></li>
+</ul>
 </div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -421,6 +445,20 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contents">Contents</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
