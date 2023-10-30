@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>The Structure of fMRI Data &#8212; fMRI Image Preprocessing</title>
+    <title>Summary and Quiz &#8212; fMRI Image Preprocessing</title>
   
   
   
@@ -62,13 +62,10 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="_static/sphinx-thebe.js"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '1.fmri-structure';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '8.summary-quiz';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Step 1: Motion Correction" href="2.motion.html" />
-    <link rel="prev" title="Introduction" href="0.intro.html" />
+    <link rel="prev" title="Running Preprocessing Using MATLAB Code" href="7.preprocessing-code.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -170,14 +167,14 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">The Structure of fMRI Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1.fmri-structure.html">The Structure of fMRI Data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="2.motion.html">Step 1: Motion Correction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3.slice-timing.html">Step 2: Slice-Timing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="4.normalisation.html">Step 3: Normalisation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="5.smoothing.html">Step 4: Smoothing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="6.building-pipelines.html">Building the Preprocessing Pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="7.preprocessing-code.html">Running Preprocessing Using MATLAB Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="8.summary-quiz.html">Summary and Quiz</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Summary and Quiz</a></li>
 </ul>
 
     </div>
@@ -249,7 +246,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2F1.fmri-structure.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2F8.summary-quiz.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -279,7 +276,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="_sources/1.fmri-structure.ipynb" target="_blank"
+      <li><a href="_sources/8.summary-quiz.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -361,7 +358,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>The Structure of fMRI Data</h1>
+    <h1>Summary and Quiz</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -371,7 +368,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-images">4D images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quiz">Quiz</a></li>
 </ul>
             </nav>
         </div>
@@ -383,15 +380,12 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="the-structure-of-fmri-data">
-<h1>The Structure of fMRI Data<a class="headerlink" href="#the-structure-of-fmri-data" title="Permalink to this heading">#</a></h1>
-<p>Before we get started discussing the pre-processing of fMRI data, it is useful to have a review of the structure of an fMRI image. In this lesson we are going to talk a lot about the spatial and temporal elements of fMRI datasets, with lots of references to the fMRI timeseries. So it is important you understand what is meant by this before we go any further.</p>
-<section id="d-images">
-<h2>4D images<a class="headerlink" href="#d-images" title="Permalink to this heading">#</a></h2>
-<p>At its most basic, an fMRI dataset is a collecting of 3D volumes of the brain that were collected in rapid succession. The speed at which we collect these volumes is given by the TR of sequence, and is usually around 2-3 seconds. This gives the temporal resolution of the data. Together, these 3D images form a 4D dataset, where we have three spatial dimensions and a fourth dimension of time. As we move through these 3D volumes we see how the BOLD signal changed over the course of the experiment. Importantly, each of these 3D volumes is collected while the subject is engaged with some sort of cognitive task in the scanner. What these tasks look like and how we use them is the focus of the Experimental Design and Optimisation unit. For the purposes of this lesson, just know that the subject was doing something while in the scanner. Our broad purpose in analysing the data is to try and match changes in the BOLD signal over time with changes in the different conditions of this experimental task.
-The fMRI timeseries</p>
-<p>Each of the 3D volumes that make up an fMRI dataset can be thought of as a snapshot in time, indicating the values of the BOLD signal at that precise moment. A typical fMRI scan may amass around 200 of these snapshots. For each voxel in the image, we can see how the signal at that point in the image changed over time by looking at how its value shifts across all the 3D volumes. For a scan with 200 volumes, we therefore have 200 values for each voxel in the image documenting how the BOLD signal changed over the course of the experiment. This sequence of values is known as the fMRI timeseries. The timeseries at each voxel represents the raw data that we will subject to statistical analysis to try and discern patterns that map on to the pattern of the experimental conditions. For now, just consider the scale of this data. A typical fMRI volume may have dimensions <span class="math notranslate nohighlight">\(60 \times 60 \times 40\)</span> with 200 datapoints at each voxel. This gives over 28 million data points in a single fMRI dataset. An example of the timeseries for 3 voxels is given below.</p>
-</section>
+  <section class="tex2jax_ignore mathjax_ignore" id="summary-and-quiz">
+<h1>Summary and Quiz<a class="headerlink" href="#summary-and-quiz" title="Permalink to this heading">#</a></h1>
+<section id="quiz">
+<h2>Quiz<a class="headerlink" href="#quiz" title="Permalink to this heading">#</a></h2>
+<p>Use the quiz below to test your knowledge of the content.</p>
+<iframe width="640px" height="480px" src="https://forms.office.com/Pages/ResponsePage.aspx?id=B8tSwU5hu0qBivA1z6kad9kpLkNdubNGu77CLsl9k_lUMktUVTFUV1VMOERDWVdJSFNGU1pKM1k3Ti4u&embed=true" frameborder="0" marginwidth="0" marginheight="0" style="border: none; max-width:100%; max-height:100vh" allowfullscreen webkitallowfullscreen mozallowfullscreen msallowfullscreen> </iframe></section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -425,22 +419,13 @@ The fMRI timeseries</p>
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="0.intro.html"
+       href="7.preprocessing-code.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction</p>
+        <p class="prev-next-title">Running Preprocessing Using MATLAB Code</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="2.motion.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Step 1: Motion Correction</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
@@ -457,7 +442,7 @@ The fMRI timeseries</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#d-images">4D images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quiz">Quiz</a></li>
 </ul>
   </nav></div>
 
