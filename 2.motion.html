@@ -67,7 +67,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = '2.motion';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Step 2: Slice-Timing" href="3.slice-timing.html" />
+    <link rel="next" title="Step 2: Slice Timing Correction" href="3.slice-timing.html" />
     <link rel="prev" title="The Structure of fMRI Data" href="1.fmri-structure.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -172,12 +172,11 @@ const thebe_selector_output = ".output, .cell_output"
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="1.fmri-structure.html">The Structure of fMRI Data</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Step 1: Motion Correction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="3.slice-timing.html">Step 2: Slice-Timing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="3.slice-timing.html">Step 2: Slice Timing Correction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="4.normalisation.html">Step 3: Normalisation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="5.smoothing.html">Step 4: Smoothing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="6.building-pipelines.html">Building the Preprocessing Pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="7.preprocessing-code.html">Running Preprocessing Using MATLAB Code</a></li>
-<li class="toctree-l1"><a class="reference internal" href="8.summary-quiz.html">Summary and Quiz</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7.summary-quiz.html">Summary and Quiz</a></li>
 </ul>
 
     </div>
@@ -401,7 +400,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="step-1-motion-correction">
 <h1>Step 1: Motion Correction<a class="headerlink" href="#step-1-motion-correction" title="Permalink to this heading">#</a></h1>
-<p>One of the biggest sources of variance in the fMRI timeseries is head motion. Unfortunately, such motion is inevitable as it would be unreasonable to expect subjects to remain perfectly still for the duration of a typical fMRI task. In cases where motion is particularly bad, it can cause such damage that the data cannot be used. Even in cases where the motion seems slight, changes in head position of as little as 2-3mm can corrupt the data. Motion is therefore a serious issue for the quality of an fMRI series. Although best practise to minimise movement at source, we must recognise that there will always be <em>some</em> head motion and must therefore be aware of what we can and cannot do to try and fix it.</p>
+<p>One of the biggest sources of variance in the fMRI timeseries is head motion. Unfortunately, motion in the scanner is inevitable as it is would unrealistic to expect all subjects to remain perfectly still for the duration of the experimental task. In cases where motion is particularly bad, it can cause such issues that the data cannot be used. Even in cases where the motion seems slight, changes in head position of as little as 2-3mm can corrupt the data. Motion is therefore a serious issue for the quality of our fMRI data. Although best to minimise movement at source, we must recognise that there will always be <em>some</em> head motion and must therefore be aware of what we can and cannot do to try and fix it.</p>
 <section id="problems-with-motion">
 <h2>Problems With Motion<a class="headerlink" href="#problems-with-motion" title="Permalink to this heading">#</a></h2>
 <p>There are two main issues resulting from head motion. The first is that motion will cause individual voxels to suddenly contain data from a different part of the brain. The second is that motion can disrupt the recording of the signal by the scanner. Both these issues can be further compounded by motion that occurs more during certain conditions of the experimental task. In these case, the motion is <em>correlated</em> with the task, creating a serious confound in the data.</p>
@@ -409,14 +408,14 @@ document.write(`
 <h3>Corruption of the Time Series<a class="headerlink" href="#corruption-of-the-time-series" title="Permalink to this heading">#</a></h3>
 <p>One of the main issue with motion is that the time series at an individual voxel is no longer a continuous measure of a specific point in the brain. Instead, the time series measures <em>several</em> points in the brain over time. Where this is particularly problematic is at tissue boundaries. For instance, motion may causes a voxel to contain signal from both <em>inside</em> and <em>outside</em> the head, or from both <em>inside</em> and <em>outside</em> the ventricles. In these cases, the change in tissue type will cause a sudden shift in signal intensity that may be misconstrued as true brain activity. This is shown in <a class="reference internal" href="#mot-spikes-fig"><span class="std std-numref">Fig. 4</span></a>, where 20 volumes in the middle of a functional series have been artificially shifted to the right and then back again. Without any form of correction, the sudden change of intensity in the highlighted voxel would likely be identified as true brain activation by the statistical analysis.</p>
 <figure class="align-default" id="mot-spikes-fig">
-<a class="reference internal image-reference" href="_images/mot-spikes.png"><img alt="_images/mot-spikes.png" src="_images/mot-spikes.png" style="width: 800px;" /></a>
+<a class="reference internal image-reference" href="_images/mot-spikes.png"><img alt="_images/mot-spikes.png" src="_images/mot-spikes.png" style="width: 600px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 4 </span><span class="caption-text">Illustration of how sudden changes in signal intensity can occur after head motion.</span><a class="headerlink" href="#mot-spikes-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>One saving grace of this form of motion is that it is often visible as activations that trace the border between tissue types. As such, any activation pattern that sits along the edge of the brain, or along the edge of internal structures, should be treated with extreme caution. An example is shown in <a class="reference internal" href="#mot-edge-fig"><span class="std std-numref">Fig. 5</span></a>. However, we cannot rely on motion artifacts always being visible in this manner, as motion can also cause more subtle corrupting effects on the data. As we will see below, there are means for correcting motion, but these have their limitations. In some cases the motion can be so bad that we cannot trust <em>any</em> results from the data and thus have to discard the subject entirely.</p>
+<p>One saving grace of this form of motion is that it is often visible as activations that trace the border between tissue types. As such, any activation pattern that sits along the edge of the brain, or along the edge of internal structures, should be treated with extreme caution. An example is shown in <a class="reference internal" href="#mot-edge-fig"><span class="std std-numref">Fig. 5</span></a>.</p>
 <figure class="align-default" id="mot-edge-fig">
-<a class="reference internal image-reference" href="_images/mot-edge.png"><img alt="_images/mot-edge.png" src="_images/mot-edge.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/mot-edge.png"><img alt="_images/mot-edge.png" src="_images/mot-edge.png" style="width: 500px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 5 </span><span class="caption-text">Illustration of how motion artefacts can appear along the edges of the brain.</span><a class="headerlink" href="#mot-edge-fig" title="Permalink to this image">#</a></p>
 </figcaption>
@@ -424,11 +423,11 @@ document.write(`
 </section>
 <section id="corruption-of-the-signal-measurement">
 <h3>Corruption of the Signal Measurement<a class="headerlink" href="#corruption-of-the-signal-measurement" title="Permalink to this heading">#</a></h3>
-<p>A more insidious effect of motion is that it can impact the signal measured by the scanner. When the subject’s head moves, protons from a neighbouring slice with a different excitation move into the voxel. This disrupts the magnetic gradients and the subsequent reconstructed signal will not be accurate. This is exacerbated when using an inter-leaved acquisition sequence, as the excitation differences between neighbouring slices will be greater. Importantly, these <em>spin-history</em> effects persist for several volumes, until steady-state is re-established. Unfortunately, such effects are not corrected for by standard spatail motion correction techniques. Although spin-history correction has been proposed (e.g. <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/8699946/">Friston et al, 1996</a>), such methods are not in common use. In part, this is due to the complexity and poor understanding of the effects of spin-history on the BOLD signal. Instead, any residual effects of motion after pre-processing are usually accommodated during the statistical modelling. In extreme cases, spin-history effects will be visible as <em>striping</em> in the image, as shown in <a class="reference internal" href="#spin-hist-fig"><span class="std std-numref">Fig. 6</span></a> where the top row shows an interleaved sequence and the bottom row shows a sequential sequence. The left column is a scan without motion and the right is a scan with motion. In cases where there are extreme spin history effects, the scan may be unusable.</p>
+<p>A more insidious effect of motion is that it can impact the signal measured by the scanner. When the subject’s head moves, protons from a neighbouring slice with a different excitation move into the voxel. This disrupts the magnetic gradients and alters the signal that will be measured. This is exacerbated when using an inter-leaved acquisition sequence, as the excitation differences between neighbouring slices will be greater. Importantly, these <em>spin-history</em> effects persist for several volumes, even if those volumes are not subject to motion themselves. Unfortunately, such effects are not a part of standard spatail motion correction techniques. Although spin-history correction has been proposed (e.g. <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/8699946/">Friston et al, 1996</a>), such methods are not in common use. In part, this is due to the complexity and poor understanding of the influence of spin-history on the BOLD signal. Instead, any residual effects of motion after pre-processing are usually accommodated during the statistical modelling. In extreme cases, spin-history effects will be visible as <em>striping</em> in the image, as shown in <a class="reference internal" href="#spin-hist-fig"><span class="std std-numref">Fig. 6</span></a>. Here, the top row shows an interleaved sequence and the bottom row shows a sequential sequence. The left column is a scan without motion and the right is a scan with motion.</p>
 <figure class="align-default" id="spin-hist-fig">
 <a class="reference internal image-reference" href="_images/spin-history.gif"><img alt="_images/spin-history.gif" src="_images/spin-history.gif" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Spin history effects in both an interleaved (<em>top</em>) and sequential (<em>bottom</em>) sequence. Images on the <em>left</em> contain no motion, whereas the images on the <em>right</em> contain large head motions.</span><a class="headerlink" href="#spin-hist-fig" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Spin history effects in both an interleaved (<em>top</em>) and sequential (<em>bottom</em>) sequence. Images on the <em>right</em> contain motion, whereas images on the <em>left</em> contain no motion.</span><a class="headerlink" href="#spin-hist-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -477,17 +476,17 @@ document.write(`
 <figure class="align-default" id="trans-spikes-fig">
 <a class="reference internal image-reference" href="_images/trans-spikes.png"><img alt="_images/trans-spikes.png" src="_images/trans-spikes.png" style="width: 800px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Example of motion parameters for translations of the head during the fMRI series. Some large motion spikes are visible, but are not numerous enough to suggest discarding the scan.</span><a class="headerlink" href="#trans-spikes-fig" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Example of motion parameters containing large spikes. In this example, the spikes are not numerous enough to suggest discarding the scan.</span><a class="headerlink" href="#trans-spikes-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 </section>
 <section id="motion-correction-in-spm">
 <h2>Motion Correction in SPM<a class="headerlink" href="#motion-correction-in-spm" title="Permalink to this heading">#</a></h2>
-<p>Now that we have discussed the theory of motion correction, we can examine how to perform motion correction using SPM.</p>
+<p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM.</p>
 <section id="using-the-graphical-batch-system">
 <h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
-<p>The video below will show you how to perform realignment using SPM12. The default in SPM is to perform a two-pass procedure where the images are aligned to the first volume, then a mean image is created from the realigned volumes and a second registration is performed to align these volumes with the mean. The final T matrices represent a combination of the transformations needed for both steps. The idea is that the registration can be more finely tuned using this second pass, although it realistically does not make a huge difference. Importantly, we will be saving this mean image to use in a later pre-processing step.</p>
+<p>The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
 <div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
 </section>
 <section id="using-matlab-code">
@@ -497,36 +496,36 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
 <span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
-<span class="n">spm_figure</span><span class="p">(</span><span class="s">&#39;GetWin&#39;</span><span class="p">,</span><span class="s">&#39;Graphics&#39;</span><span class="p">);</span><span class="w">                   </span><span class="c">% Open graphics window for plots</span>
+<span class="n">spm_figure</span><span class="p">(</span><span class="s">&#39;GetWin&#39;</span><span class="p">,</span><span class="s">&#39;Graphics&#39;</span><span class="p">);</span><span class="w">                  </span><span class="c">% Open graphics window for plots</span>
 
 <span class="c">% Motion correction (estimate)</span>
 <span class="n">func</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_func.nii&#39;</span><span class="p">);</span>
-<span class="n">eopts</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.estimate&#39;</span><span class="p">);</span>
-<span class="n">eopts</span><span class="p">.</span><span class="n">rtm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">                                     </span><span class="c">% Set to 0 for 1-pass correction</span>
+<span class="n">eopts</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.estimate&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Default options struct</span>
+<span class="n">eopts</span><span class="p">.</span><span class="n">rtm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">                                    </span><span class="c">% Set to 0 for 1-pass correction</span>
 
 <span class="n">spm_realign</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">eopts</span><span class="p">);</span><span class="w">                          </span>
 
 <span class="c">% Motion correction (resample)                     </span>
 <span class="n">mcfunc</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">     </span>
-<span class="n">ropts</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.write&#39;</span><span class="p">);</span><span class="w">  </span>
-<span class="n">ropts</span><span class="p">.</span><span class="n">interp</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">                                  </span><span class="c">% 4th-degree B-spline</span>
-<span class="n">ropts</span><span class="p">.</span><span class="n">which</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w">                              </span><span class="c">% [2 1] = resample all volumes (2) and create mean (1)</span>
+<span class="n">ropts</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.write&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Default options struct  </span>
+<span class="n">ropts</span><span class="p">.</span><span class="n">interp</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">                                 </span><span class="c">% 4th-degree B-spline</span>
+<span class="n">ropts</span><span class="p">.</span><span class="n">which</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w">                             </span><span class="c">% [2 1] = resample all volumes (2) and create mean (1)</span>
 
-<span class="n">spm_reslice</span><span class="p">(</span><span class="n">mcfunc</span><span class="p">,</span><span class="n">eopts</span><span class="p">);</span>
+<span class="n">spm_reslice</span><span class="p">(</span><span class="n">mcfunc</span><span class="p">,</span><span class="n">ropts</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/028a2d0e03dd1badc957799f2ce52cabb385c8af78be53af7a0bf79259d7b329.png" src="_images/028a2d0e03dd1badc957799f2ce52cabb385c8af78be53af7a0bf79259d7b329.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_realign (v7141)                         13:31:51 - 31/10/2023
+<img alt="_images/a538f96d31a5bd31d262b6698ec8aebba58381e372e934126e0368dc628bef49.png" src="_images/a538f96d31a5bd31d262b6698ec8aebba58381e372e934126e0368dc628bef49.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_realign (v7141)                         13:47:51 - 01/11/2023
 ========================================================================
 Printing &#39;Graphics&#39; figure to:
-  /home/martyn/Downloads/spm_2023Oct31.ps
-Completed                               :          13:32:23 - 31/10/2023
+  /home/martyn/Downloads/spm_2023Nov01.ps
+Completed                               :          13:48:04 - 01/11/2023
 
-SPM12: spm_reslice (v7141)                         13:32:24 - 31/10/2023
+SPM12: spm_reslice (v7141)                         13:48:05 - 01/11/2023
 ========================================================================
-Completed                               :          13:32:38 - 31/10/2023
+Completed                               :          13:48:13 - 01/11/2023
 </pre></div>
 </div>
 </div>
@@ -579,7 +578,7 @@ Completed                               :          13:32:38 - 31/10/2023
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Step 2: Slice-Timing</p>
+        <p class="prev-next-title">Step 2: Slice Timing Correction</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
