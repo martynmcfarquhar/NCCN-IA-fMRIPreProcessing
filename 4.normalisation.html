@@ -440,7 +440,12 @@ document.write(`
 <span class="nb">addpath</span><span class="p">(</span><span class="nb">fullfile</span><span class="p">(</span><span class="n">spm</span><span class="p">(</span><span class="s">&#39;dir&#39;</span><span class="p">),</span><span class="s">&#39;toolbox&#39;</span><span class="p">,</span><span class="s">&#39;OldNorm&#39;</span><span class="p">));</span><span class="w"> </span><span class="c">% Add the Old Normalise functions</span>
 
 <span class="c">% Load data</span>
-<span class="n">func</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;arIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">           </span><span class="c">% Motion and slice timing corrected data</span>
+<span class="n">func</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;arIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">           </span><span class="c">% Motion and slice timing corrected data</span>
+<span class="n">mfunc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;meanIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">         </span><span class="c">% Mean functional (from realignment)</span>
+<span class="n">anat</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_anat.nii&#39;</span><span class="p">);</span><span class="w">             </span><span class="c">% Anatomical scan</span>
+
+<span class="c">% Coregister anat -&gt; mean</span>
+<span class="n">spm_coreg</span><span class="p">();</span>
 
 <span class="c">% Normalise (estimate)</span>
 <span class="n">spm_normalise</span><span class="p">();</span>
@@ -451,8 +456,17 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Error using spm_normalise
-Incorrect usage.
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_coreg (v7320)                           16:29:55 - 01/11/2023
+========================================================================
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Operands to the logical AND (&amp;&amp;) and OR (||) operators must be convertible to logical scalar values. Use the ANY or ALL functions to reduce operands to logical scalar values.
+
+Error in spm_coreg&gt;loaduint8 (line 229)
+if size(V.pinfo,2)==1 &amp;&amp; V.pinfo(1) == 2
+
+Error in spm_coreg (line 127)
+    VG.uint8 = loaduint8(VG);
 </pre></div>
 </div>
 </div>
