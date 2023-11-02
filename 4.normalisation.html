@@ -368,7 +368,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-to-a-template">Direct Normalisation to a Template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tissue-probability-maps-tpms">Tissue Probability Maps (TPMs)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
@@ -387,7 +393,10 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="step-3-normalisation">
 <h1>Step 3: Normalisation<a class="headerlink" href="#step-3-normalisation" title="Permalink to this heading">#</a></h1>
-<p>We discussed the principles behind non-linear registration to a template space during Functional Neuroanatomy. As a quick review, the reasons we gave for needing to normalise data to a standard space were related to issues of anatomical variability and how this prevents us from analysing groups of scans. This anatomical variability can be large, meaning that simple affine approaches are rarely enough. Because of this, we have to use non-linear methods to get the best fit. The difference this time is that we want to normalise multiple functional volumes, rather than structural data.</p>
+<p>We have previously discussed the principles behind non-linear registration on this course. As a quick review, the reasons for normalising data to a standard space relate to issues of anatomical variability and the problems this poses for analysing groups of scans. In brief, the statistical analysis of fMRI data is performed in voxel-space. As such, it is necessary for all the images to be the same dimensions <em>and</em> for the same voxel coordinates to correspond to the same anatomical locations. Given how substantial anatomical variability can be, this will never be the case for raw fMRI data. As such, normalisation becomes a necessary step. However, given the complexity of the anatomical differences across subjects, simple affine registration approaches will not be suitable. Instead, we need to use <em>non-linear</em> methods to provide the best correspondance between the data and the standard space template.</p>
+<section id="direct-normalisation-to-a-template">
+<h2>Direct Normalisation to a Template<a class="headerlink" href="#direct-normalisation-to-a-template" title="Permalink to this heading">#</a></h2>
+<p>The most basic form of spatial normalisation involves the direct registration of an image to an MNI template. This can be performed as either a <em>one-step</em> or <em>two-step</em> procedure.</p>
 <p>In the past it was usual to try and register the functional data directly to an EPI MNI template. While this will work to align the coarse structures of the brain, because the resolution of fMRI data is so poor there is limited anatomical information that can be used to improve this alignment. As such, it is more typical these days to use a structural T1 scan of the same subject to estimate the normalisation to a high-resolution structural MNI template. The improved detail of the structural scan should result in a much better fit to the MNI template. The parameters of this transformation can then be applied to the functional data. So, we usually use a two-step registration approach, as opposed to a one-step approach, as shown in <a class="reference internal" href="#norm-poldrack-fig"><span class="std std-numref">Fig. 13</span></a> from Poldrack, Mumford and Nichols (2011).</p>
 <figure class="align-default" id="norm-poldrack-fig">
 <a class="reference internal image-reference" href="_images/norm-poldrack.png"><img alt="_images/norm-poldrack.png" src="_images/norm-poldrack.png" style="width: 800px;" /></a>
@@ -395,9 +404,12 @@ document.write(`
 <p><span class="caption-number">Fig. 13 </span><span class="caption-text">Illustration of both one-step and two-step normalisation procedures.</span><a class="headerlink" href="#norm-poldrack-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+</section>
 <section id="unified-segmentation">
 <h2>Unified segmentation<a class="headerlink" href="#unified-segmentation" title="Permalink to this heading">#</a></h2>
 <p>The approach to normalisation used by SPM is known as unified segmentation (Ashburner &amp; Friston, 2005), where the generation of normalisation parameters is performed as part of the same algorithm used to segment a structural image into the different tissue classes. Although we do not need to understand too much about how this segmentation works, it can be useful in this context to have some understanding because it can help identify where issues may be when the normalisation appears to have failed.</p>
+<section id="gaussian-mixture-models-for-segmentation">
+<h3>Gaussian Mixture Models for Segmentation<a class="headerlink" href="#gaussian-mixture-models-for-segmentation" title="Permalink to this heading">#</a></h3>
 <p>In terms of segmenting an image, given that we can see the different tissue types fairly easily in a standard T1-weighted structural scan, it stands to reason that the voxel intensities should provide some information about the tissue classes. For instance, white matter is generally brighter than grey matter and CSF tends to be the darkest. We can get a sense of this by plotting the probabilities of intensity values for different manually-defined tissue types, as shown in <a class="reference internal" href="#seg-tissues-fig"><span class="std std-numref">Fig. 14</span></a>.</p>
 <figure class="align-default" id="seg-tissues-fig">
 <a class="reference internal image-reference" href="_images/seg-tissues.png"><img alt="_images/seg-tissues.png" src="_images/seg-tissues.png" style="width: 600px;" /></a>
@@ -413,6 +425,9 @@ document.write(`
 </figcaption>
 </figure>
 <p>After estimating the shapes of all the Gaussian distributions in blue, we can assess the probability that a voxel belongs to a tissue class by calculating the probability of its intensity value for each of these distributions. Whichever distribution gives the highest probability represents the most likely tissue class. However, as alluded to earlier, one of the issues with this is that there is a degree of overlap between these distributions. This means that certain intensity values will have similar probabilities for multiple tissue types. This speaks to a more general issue known as the partial volume effect, where a voxel can actually contain several tissue types, given that voxels can straddle tissue boundaries. As such, some additional information is useful in order to make a decision. This additional information comes in the form of tissue probability maps (TPMs), which are images that contain probabilities that indicate how likely each voxel in the brain is to be a particular tissue type. This therefore compliments the intensity information from the mixture-model with spatial information from the TPMs. The way SPM combines this information is based on a complicated Bayesian model where the TPMs are used as priors. The actual mechanics of this are not so important, but the principle of using both intensity and spatial information to decide what tissue type a voxel contains is hopefully fairly intuitive.</p>
+</section>
+<section id="tissue-probability-maps-tpms">
+<h3>Tissue Probability Maps (TPMs)<a class="headerlink" href="#tissue-probability-maps-tpms" title="Permalink to this heading">#</a></h3>
 <p>In terms of normalisation, the important element here are the TPMs. These are illustrated in <a class="reference internal" href="#tpm-fig"><span class="std std-numref">Fig. 16</span></a> for grey matter, white matter, CSF and “other”. The TPMs in SPM12 are based on images from the ICBM Probabilistic Atlas, which is built from scans of 452 young healthy adults. The main point is that the TPMs in SPM are in MNI space and so in order to use them to make decisions about each subject’s structural data they need warping into subject-space. Because of this, a non-linear deformation field that goes from MNI-space to subject-space is needed for the segmentation algorithm to work. This deformation field is therefore a byproduct of segmentation, that is constructed and estimated using the approaches we have discussed previously on the course. Importantly, inverting this field therefore provides us with the parameters we need to normalise our data.</p>
 <figure class="align-default" id="tpm-fig">
 <a class="reference internal image-reference" href="_images/tpm.png"><img alt="_images/tpm.png" src="_images/tpm.png" style="width: 400px;" /></a>
@@ -420,7 +435,11 @@ document.write(`
 <p><span class="caption-number">Fig. 16 </span><span class="caption-text">Example of the tissue probability maps (TPMs) for grey matter, white matter, CSF and air.</span><a class="headerlink" href="#tpm-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+</section>
+<section id="anatomical-and-functional-registration">
+<h3>Anatomical and Functional Registration<a class="headerlink" href="#anatomical-and-functional-registration" title="Permalink to this heading">#</a></h3>
 <p>Now remember, we are not trying to normalise the structural data. Instead, we want to use the normalisation parameters to normalise our functional volumes. In order for this to be possible, we have to make sure that the structural and functional scans are accurately registered. If this is not the case, then the deformation field will warp the wrong parts of the image and our transformation will be garbage. So the first step in unified segmentation is usually to register the structural and functional images together. Once we are happy with their alignment, we can use the structural image to estimate the transformation and then apply it to the functional images. The unified segmentation approach is therefore a two-step normalisation procedure.</p>
+</section>
 </section>
 <section id="normalising-functional-data-in-spm">
 <h2>Normalising functional data in SPM<a class="headerlink" href="#normalising-functional-data-in-spm" title="Permalink to this heading">#</a></h2>
@@ -538,7 +557,13 @@ Error in spm_coreg (line 127)
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-to-a-template">Direct Normalisation to a Template</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tissue-probability-maps-tpms">Tissue Probability Maps (TPMs)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
