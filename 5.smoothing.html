@@ -368,9 +368,19 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reducing-noise">Reducing Noise</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-normalisation">Improving Normalisation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-staistical-assumptions">Meeting the Staistical Assumptions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-to-smooth-fmri-data">How Much to Smooth fMRI Data?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -384,7 +394,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="step-4-smoothing">
 <h1>Step 4: Smoothing<a class="headerlink" href="#step-4-smoothing" title="Permalink to this heading">#</a></h1>
-<p>The final step in the standard fMRI pre-processing pipeline is to smooth the realigned, motion-corrected and normalised data, by convolving it with a Gaussian kernel. We already discussed smoothing as part of the image filtering material in Functional Neuroanatomy, so this section will be something of a review. However, it is worth taking some time to discuss why we want to smooth our functional data as, on the face of it, smoothing is a destructive step that takes already low-resolution data and makes it worse, as shown in <a class="reference internal" href="#smooth-ex-fig"><span class="std std-numref">Fig. 19</span></a>.</p>
+<p>The final step in a standard fMRI pre-processing pipeline is to <em>smooth</em> the motion-corrected, slice-timing-corrected and normalised data. We already discussed smoothing as part of image filtering earlier in the course. However, it is worth taking some time to discuss <em>why</em> we want to smooth our functional data as, on the face of it, smoothing appears to be a destructive step that reduces the resolution of the function data even further, as shown in <a class="reference internal" href="#smooth-ex-fig"><span class="std std-numref">Fig. 19</span></a>.</p>
 <figure class="align-default" id="smooth-ex-fig">
 <a class="reference internal image-reference" href="_images/smoothing-example.png"><img alt="_images/smoothing-example.png" src="_images/smoothing-example.png" style="width: 500px;" /></a>
 <figcaption>
@@ -393,33 +403,104 @@ document.write(`
 </figure>
 <section id="why-smooth-fmri-data">
 <h2>Why Smooth fMRI Data?<a class="headerlink" href="#why-smooth-fmri-data" title="Permalink to this heading">#</a></h2>
-<p>If you think back to the image filtering topic from Functional Neuroanatomy, hopefully you recall that we can think of filters either in the spatial or frequency domain. In the spatial-domain, convolution of an image and a Gaussian kernel results in a form of weighted-averaging of neighbouring voxels. In the frequency-domain, a Gaussian kernel corresponds to a low-pass filter, removing high-frequency information from the image. Both of these perspectives allow insight into one of the main reasons for filtering, which is to improve the signal-to-noise ratio in the image. In the spatial domain, we can think of this in terms of small changes from voxel-to-voxel canceling out, as some of these changes will be increases and some will be decreases. These small-scale changes are effectively removed by smoothing, whereas larger-scale changes that are consistent across voxels will remain. The idea here is that noise will tend to change from voxel-to-voxel, whereas true signal should remain relatively stable across multiple voxels. Smoothing should help reduce this noise and make the true signal easier to detect.</p>
-<p>This idea is illustrated in <a class="reference internal" href="#smooth-spatial-fig"><span class="std std-numref">Fig. 20</span></a>. The top plot shows the spatial signal taken from a single row of a single slice of an image. We can see that there is a general shape to this signal, but also plenty of small lumps and bumps along the way. Our assumption is that this general shape is the true signal we are interested in, and that the little lumps and bumps are noise. After smoothing the image we can see the shape of the same spatial signal in the bottom plot, showing how the general shape of the signal is the same but all the little lumps and bumps have disappeared. As such, we have reduced the noise in favour of the true signal.</p>
+<p>Generally speaking, there are three main reasons for smoothing fMRI data. The first is to improve the signal-to-noise ratio of the image by reducing noise through averaging neighbouring voxels. The second is to improve some of the limitations of spatial normalisation, and the third is to meet the minimal smoothness requirements of certain statistical techniques that we will discuss later on the course.</p>
+<section id="reducing-noise">
+<h3>Reducing Noise<a class="headerlink" href="#reducing-noise" title="Permalink to this heading">#</a></h3>
+<p>Recall from earlier in the course that we can think of image filters in either the <em>spatial</em> or <em>frequency</em> domains. In the spatial domain, convolution of an image and a Gaussian kernel results in a <em>weighted-averaging</em> of neighbouring voxels. In the frequency-domain, a Gaussian kernel corresponds to a low-pass filter, removing high-frequency information from the image. Both of these perspectives provide insight into one of the main reasons for filtering, which is to improve the signal-to-noise ratio of the signal that underlies the image. In the spatial domain, small changes of signal intensity from voxel-to-voxel will effectively cancel within the convolution process. If these changes correspond to random noise, they will consist of both signal increases and decreases, hence why the values will cancel when averaged. In comparison, large-scale changes that are consistent across multiple voxels will remain after convolution. The general idea is that noise will tend to change from voxel-to-voxel, whereas true signal will remain relatively stable across voxels. As such, smoothing should help reduce the noise and thus make the true signal easier to detect. This is illustrated in <a class="reference internal" href="#smooth-spatial-fig"><span class="std std-numref">Fig. 20</span></a>. The top plot shows the spatial signal taken from a single row of a single slice of a functional image. Notice that there is a general shape to the signal, but also plenty of small perturbations. Our assumption is that this general shape is the true signal and that the smaller changes on top of this shape correspond to noise. As the size of the smoothing kernel increases, we can see that this general shape becomes more pronounced with the small changes decreasing. As such, we are reducing the noise in favour of the true signal.</p>
 <figure class="align-default" id="smooth-spatial-fig">
-<a class="reference internal image-reference" href="_images/smooth-noise.png"><img alt="_images/smooth-noise.png" src="_images/smooth-noise.png" style="width: 700px;" /></a>
+<a class="reference internal image-reference" href="_images/smooth-noise.png"><img alt="_images/smooth-noise.png" src="_images/smooth-noise.png" style="width: 650px;" /></a>
 <figcaption>
 <p><span class="caption-number">Fig. 20 </span><span class="caption-text">Illustration of how smoothing changes the spatial signal of an image.</span><a class="headerlink" href="#smooth-spatial-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>We can make a connection here with the frequency-domain view of filtering, as we are removing high-frequency information from the image. This high-frequency information corresponds to fast changes in the signal from voxel-to-voxel. Because we expect true activation to be spread across multiple voxels, any sudden changes in the signal from voxel-to-voxel more likely corresponds to noise. As such, if we remove this high-frequency information in favour of lower-frequency information then we should be removing noise and keeping the bits of the signal of interest. Again, you can see this by examining the before and after smoothing plots above.</p>
-<p>This idea of low-pass filtering an image also explains why smoothing has the visual effect that it does because detail in an image corresponds to higher-frequencies. Removing high-frequency information therefore removes detail from the image and thus makes it look blurry. This makes the boundaries of the anatomy of the brain harder to discern as they have been spread-out out in all directions. Although this may sound like a bad thing from a localisation perspective, it is actually an advantage for us here because this looser boundary definition helps overcome some of the limitations of normalisation. Because normalisation is never perfect, and is somewhat constrained by our use of regularisation, the anatomy of different subjects will never perfectly overlap even after normalisation. Because of this, regions of activation will also be slightly mismatched across subjects, which can affect the statistical analysis. By smoothing the data we end up evening-out some of this discrepancy so that regions of activation better overlap across subjects, despite the limitations of normalisation.</p>
-<p>As a final point, smoothing is also needed to meet some of the statistical assumptions we will be discussing in the coming weeks. We will not go into much detail for now, but when we come to discuss methods of multiple comparisons correction we will come across something known as Gaussian Random Field theory. This is the primary theoretical backbone of the correction technique that SPM uses to calculate results from the statistical analysis. In order for random field theory to be valid, there is an assumed level of smoothness in the data. To guarantee that this assumption is met, we can apply smoothing to an image. So this provides the third main justification for smoothing the fMRI images.</p>
+<p>A connection can also be made here with the frequency-domain view of filtering. From this perspective, we are removing <em>high-frequency</em> spatial information from the image. This high-frequency information corresponds to fast changes in the signal from voxel-to-voxel and is therefore assumed to correspond to noise. Low-frequency spatial information corresponds to the more general shape of the signal across multiple voxels and is therefore assumed to correspond to the true signal. Removal of the high-frequency information in favour of the low-frequency information therefore has the effect of smoothing the image. This idea of low-pass filtering also explains why smoothing has the visual effect that it does, because detail in an image corresponds to high-frequency information. Removing high-frequency information therefore removes detail from the image and thus makes it look blurry.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The discussion above about high-frequency information and image detail also provides insight into why images will appear blurrier after interpolation. Even though interpolation methods can increase the resolution of an image, they will not add more information to the image. This is because the interpolated values are entirely dependant upon the values already in the image. As such, interpolation cannot add <em>detail</em> to an image that was not already there. We can see this when we consider that most interpolation methods use a <em>smooth</em> interpolation function through the original data. This is effectively <em>low</em>-frequency information. As such, an interpolated image will tend to produce a blurry result. A similar effect occurs when a standard definition signal on a television is interpolated to high-definition. The image fills the larger screen, but does not look like a high-definition signal because it does not contain any more detail. This is where AI upscaling differs from basic interpolation, as these methods seek to infer detail that was not already in the image.</p>
+</div>
+</section>
+<section id="improving-normalisation">
+<h3>Improving Normalisation<a class="headerlink" href="#improving-normalisation" title="Permalink to this heading">#</a></h3>
+<p>In addition to reducing noise, smoothing can help overcome some of the limitations of spatial normalisation. One of the most obvious visual effects of smoothing is that the anatomical boundaries within the brain become harder to discern. This is because the boundaries have been effectively spread in all directions. Although this may seem like an issue from a localisation perspective, it is actually an advantage because it helps overcome some of the limitations of spatial normalisation. Because normalisation will never be perfect, especially when constrained by regularisation, the anatomy of different subjects will never perfectly overlap. Because of this, regions of activation will also be slightly mismatched across subjects. However, by smoothing the data, we can even-out some of this discrepancy such that regions of activation better overlap across subjects. This consistency of overlap across subjects is very important for the statistical analysis of groups, meaning we are more likely to see effects if the activation pattern is consistent in terms of its spatial location. Although such consistency is improved by normalisation, it can be improved further by applying spatial smoothing. As such, smoothing also helps in terms of improving the <em>consistency</em> of anatomical alignment across subjects.</p>
+</section>
+<section id="meeting-the-staistical-assumptions">
+<h3>Meeting the Staistical Assumptions<a class="headerlink" href="#meeting-the-staistical-assumptions" title="Permalink to this heading">#</a></h3>
+<p>Beyond reducing noise and improving spatial consistency, smoothing is also necessary to meet some of the statistical assumptions we will be discussing later on the course. We will not go into much detail for now, but when we come to methods of <em>multiple comparisons correction</em> we will come across a technique known as <em>Gaussian Random Field Correction</em>. This is the primary correction technique used by SPM to calculate the statistical analysis results. In order for this correction to be valid, there is an assumed level of smoothness in the data. Although all fMRI images will contain an inherent amount of smoothness, in order to guarantee that the minimum smoothness assumption is met we can apply additional smoothing to the image. For this purpose alone, a kernel size of only twice the voxel dimensions is needed (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/18060720/">Mikl <em>et al.</em>, 2008</a>), though typically larger kernels will be used. Nevertheless, meeting these statistical assumptions provides the third main justification for smoothing fMRI data.</p>
+</section>
+</section>
+<section id="gaussian-kernels">
+<h2>Gaussian Kernels<a class="headerlink" href="#gaussian-kernels" title="Permalink to this heading">#</a></h2>
+<p>As we know from earlier on the course, smoothing is performed with the use of a Gaussian kernel. These kernels are parameterised in terms of the <em>full width at half maximum</em> (FWHM), rather than the usual mean and standard deviation associated with the Gaussian distributions. <a class="reference internal" href="#gauss-kernel-fig"><span class="std std-numref">Fig. 21</span></a> illustrates the connection between these concepts.</p>
+<figure class="align-default" id="gauss-kernel-fig">
+<a class="reference internal image-reference" href="_images/kernel-sd-fwhm.png"><img alt="_images/kernel-sd-fwhm.png" src="_images/kernel-sd-fwhm.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 21 </span><span class="caption-text">Illustration of the connection between the standard deviation and the FWHM of a Gaussian kernel.</span><a class="headerlink" href="#gauss-kernel-fig" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The FWHM is specified in millimetres and can be thought of as the <em>spatial extent</em> of the kernel. As shown in <a class="reference internal" href="#gauss-kernel-fig"><span class="std std-numref">Fig. 21</span></a>, this is associated with around 70% of the mass of the kernel. The larger the FWHM, the wider the kernel becomes and the greater the number of neighbouring voxels that are averaged-together. Of particular interest is <em>why</em> a Gaussian kernel is chosen, rather than simply averaging together voxels within a certain neighbourhood? To see why, consider the illustration in <a class="reference internal" href="#gauss-box-fig"><span class="std std-numref">Fig. 22</span></a>. The top row shows Gaussian smoothing, with the middle and bottom rows showing the result of simple voxel avergaing, using a box kernel. As we can see, the Gaussian kernel produces a much smoother and continuous result than the box kernel. Because the aim of smoothing is to recover the spatial signal before the addition of noise, it makes more sense to use a method that produces a signal that is a continuous function of time, rather than a signal that contains perturbations and discontinuities. The Gaussian kernel achieves this due to its gradual roll-off at the edges, making it a better fit than a box kernel.</p>
+<figure class="align-default" id="gauss-box-fig">
+<a class="reference internal image-reference" href="_images/gauss-box.png"><img alt="_images/gauss-box.png" src="_images/gauss-box.png" style="width: 650px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 22 </span><span class="caption-text">Illustration of the difference between a Gaussian kernel and a simple averaging (box) kernel.</span><a class="headerlink" href="#gauss-box-fig" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 <section id="how-much-to-smooth-fmri-data">
 <h2>How Much to Smooth fMRI Data?<a class="headerlink" href="#how-much-to-smooth-fmri-data" title="Permalink to this heading">#</a></h2>
-<p>Although smoothing is advantageous, we do have to be a bit careful. As already alluded to, smoothing can cause issues for the localisation of results because of the fact that boundaries become harder to discern as activation patterns are blurred across a wider area of the brain. This can mean activation in grey matter gets smeared into white matter, ventricles or even outside the brain. In addition, activation can appear larger than it was originally, and places where activation patterns are separate can get blurred into one another. This can give a false sense of the location and spatial extent of our findings, which of course we want to avoid. This is illustrated below in the figure from Poldrack, Mumford and Nichols (2011), where the effects of larger smoothing kernels becomes clear. The only caveat here is that smoothing more than 8mm is rare and so the 16mm and 32mm FWHM examples are just to illustrate what extreme smoothing can do. It is also worth noting that some of the differences in the figure below will be due to improved analysis sensitivity after reducing noise further with increased smoothing.</p>
+<p>Although smoothing is advantageous, we do have to exercise some caution. As already alluded to, smoothing can cause issues for the localisation of results because of the fact that boundaries become harder to discern as activation patterns are blurred across a wider area of the brain. This can mean activation in grey matter gets moved into white matter, ventricles or even outside the brain. In addition, activation can appear larger than it was originally, and places where activation patterns are separate can become combined. This can give a false sense of the location and spatial extent of findings. This is illustrated in <a class="reference internal" href="#smooth-size-fig"><span class="std std-numref">Fig. 23</span></a>, where the effects of larger smoothing kernels becomes clear. The only caveat here is that smoothing more than 8mm is rare and so the 16mm and 32mm FWHM examples are just to illustrate the effects of extreme smoothing.</p>
 <figure class="align-default" id="smooth-size-fig">
-<a class="reference internal image-reference" href="_images/kernel-sizes.png"><img alt="_images/kernel-sizes.png" src="_images/kernel-sizes.png" style="width: 800px;" /></a>
+<a class="reference internal image-reference" href="_images/kernel-sizes.png"><img alt="_images/kernel-sizes.png" src="_images/kernel-sizes.png" style="width: 650px;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 21 </span><span class="caption-text">Illustration of the effects of smoothing on the activation patterns in fMRI results. Notice how the highlighted clusters grow in size, combine into a single cluster and then disappear as the smoothing kernel size increases.</span><a class="headerlink" href="#smooth-size-fig" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 23 </span><span class="caption-text">Illustration of the effects of smoothing on the activation patterns in fMRI results. Notice how the highlighted clusters grow in size, combine into a single cluster and then disappear as the smoothing kernel size increases.</span><a class="headerlink" href="#smooth-size-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p>So given the above caveats, how much should we smooth? Unfortunately, there is no simple answer to this. By default, SPM chooses a FWHM of 8mm and for most use cases this should be fine. You may wish to reduce the kernel size if you are focusing on small regions of the brain where the extent of the activation is expected to be below than 8mm. When doing so, a minimum of 2 times the voxel dimensions is recommended. Typically, for fMRI data, this will result in a kernel anywhere between 4mm and 8mm FWHM.</p>
+<p>Given these issues, how much should we smooth? Unfortunately, there is no simple answer. By default, SPM chooses a FWHM of 8mm and for most use cases this can be retained. You may wish to reduce the kernel size if you are focusing on small regions of the brain where the extent of the activation is expected to be below 8mm. When doing so, a minimum of 2 times the voxel dimensions is recommended in order to meet the statistical assumptions mentioned earlier. Typically, for fMRI data, this will result in a kernel anywhere between 4mm and 8mm FWHM. For more information on the influence of difference kernel sizes, consult the investigation by <a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/18060720/">Mikl <em>et al.</em>, 2008</a>.</p>
 </section>
 <section id="smoothing-functional-data-in-spm">
 <h2>Smoothing Functional Data in SPM<a class="headerlink" href="#smoothing-functional-data-in-spm" title="Permalink to this heading">#</a></h2>
-<p>The video below will demonstrate how to smooth the realigned, slice-time corrected and normalised functional data, using SPM12.</p>
-<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=8bbcc80c-36fb-4cf4-96d4-ad5c0d79e832&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="6.Smoothing.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div></section>
+<p>Now that we have discussed the theory of spatial smoothing, we can examine how to perform this step using SPM.</p>
+<section id="using-the-graphical-batch-system">
+<h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
+<p>The video below will demonstrate how to smooth the realigned, slice-timing-corrected and normalised functional data, using the SPM graphical interface.</p>
+<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=8bbcc80c-36fb-4cf4-96d4-ad5c0d79e832&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="6.Smoothing.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
+</section>
+<section id="using-matlab-code">
+<h3>Using MATLAB Code<a class="headerlink" href="#using-matlab-code" title="Permalink to this heading">#</a></h3>
+<p>As with previous steps, it is also possible to perform spatial smoothing in code using the <code class="docutils literal notranslate"><span class="pre">spm_smooth</span></code> function. The code below shows how to replicate the functionality of the <code class="docutils literal notranslate"><span class="pre">Smooth</span></code> module from the video.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
+<span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
+
+<span class="c">% Load data</span>
+<span class="n">func</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;warIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% motion, slice-timing and normalised</span>
+
+<span class="c">% Smooth with a kernel of [8 8 8]</span>
+<span class="n">spm_smooth</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="s">&#39;swarIA_preproc_func.nii&#39;</span><span class="p">,[</span><span class="mi">8</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">8</span><span class="p">]);</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can then check the results using</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">spm_check_registration</span><span class="p">(</span><span class="s">&#39;warIA_preproc_func.nii,1&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="c"> % Unsmoothed</span>
+<span class="w">                       </span><span class="s">&#39;swarIA_preproc_func.nii,1&#39;</span><span class="p">)</span><span class="w">    </span><span class="c">% Smoothed</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_check_registration (v7759)              11:34:53 - 07/11/2023
+========================================================================
+Display warIA_preproc_func.nii,1
+        swarIA_preproc_func.nii,1
+</pre></div>
+</div>
+<img alt="_images/7f4e74c2c4cbe3cdc7a824d9ec5296424178e3a0564590e38791f45f338c9406.png" src="_images/7f4e74c2c4cbe3cdc7a824d9ec5296424178e3a0564590e38791f45f338c9406.png" />
+</div>
+</div>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -485,9 +566,19 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reducing-noise">Reducing Noise</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-normalisation">Improving Normalisation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-staistical-assumptions">Meeting the Staistical Assumptions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-to-smooth-fmri-data">How Much to Smooth fMRI Data?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
