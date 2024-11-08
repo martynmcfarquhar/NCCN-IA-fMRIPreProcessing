@@ -387,13 +387,9 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-in-spm">Direct Normalisation in SPM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified Segmentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising Functional Data in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -438,12 +434,12 @@ document.write(`
 </section>
 </section>
 <section id="unified-segmentation">
-<h2>Unified segmentation<a class="headerlink" href="#unified-segmentation" title="Permalink to this heading">#</a></h2>
+<h2>Unified Segmentation<a class="headerlink" href="#unified-segmentation" title="Permalink to this heading">#</a></h2>
 <p>In the unified segmentation approach, the generation of normalisation parameters is part of the same algorithm used to segment an anatomical image into the different tissue classes. As such, this is a form of <em>two-step</em> normalisation, but one where the generation of the deformation field is part of the segmentation process, rather than through direct registration to an MNI template. You can read more about how this works in the advanced drop-down below.</p>
 <div class="dropdown admonition">
-<p class="admonition-title">Advanced: Unified Segmentation</p>
+<p class="admonition-title">Advanced: The Unified Segmentation Algorithm</p>
 <h3 class="rubric" id="gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</h3>
-<p>To understand how this normalisation approach works, we need to first understand how tissue segmentation is performed. Given that different tissue types are fairly easy to discern using a standard T1-weighted structural scan, it stands to reason that the voxel intensities should provide some information about the tissue classes. For instance, white matter is generally brighter than grey matter and CSF tends to be the darkest. We can get a sense of this by plotting the probability distributions for the intensity values of different manually-defined tissue types, as shown in <a class="reference internal" href="#seg-tissues-fig"><span class="std std-numref">Fig. 15</span></a>.</p>
+<p>To understand how unified segmentation works, we need to first understand how tissue segmentation is performed. Given that different tissue types are fairly easy to discern using a standard T1-weighted structural scan, it stands to reason that the voxel intensities should provide some information about the tissue classes. For instance, white matter is generally brighter than grey matter and CSF tends to be the darkest. We can get a sense of this by plotting the probability distributions for the intensity values of different manually-defined tissue types, as shown in <a class="reference internal" href="#seg-tissues-fig"><span class="std std-numref">Fig. 15</span></a>.</p>
 <figure class="align-default" id="seg-tissues-fig">
 <a class="reference internal image-reference" href="_images/seg-tissues.png"><img alt="_images/seg-tissues.png" src="_images/seg-tissues.png" style="width: 500px;" /></a>
 <figcaption>
@@ -479,127 +475,9 @@ document.write(`
 </figure>
 </section>
 <section id="normalising-functional-data-in-spm">
-<h2>Normalising functional data in SPM<a class="headerlink" href="#normalising-functional-data-in-spm" title="Permalink to this heading">#</a></h2>
-<p>Now that we have discussed the theory of spatial normalisation, we can examine how to perform this step using SPM.</p>
-<section id="using-the-graphical-batch-system">
-<h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
-<p>The video below will demonstrate how to normalise the realigned and slice timing corrected functional data, using the SPM graphical interface.</p>
+<h2>Normalising Functional Data in SPM<a class="headerlink" href="#normalising-functional-data-in-spm" title="Permalink to this heading">#</a></h2>
+<p>Now that we have discussed the theory of spatial normalisation, we can examine how to perform this step using SPM. The video below will demonstrate how to normalise the realigned and slice timing corrected functional data, using the SPM graphical interface.</p>
 <div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=a33e96b4-97a3-48af-9a47-ef9c17b11c2c&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="5.Normalisation.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
-</section>
-<section id="using-matlab-code">
-<h3>Using MATLAB Code<a class="headerlink" href="#using-matlab-code" title="Permalink to this heading">#</a></h3>
-<p>Unlike the previous preprocessing steps, there are no low-level functions in SPM for performing unified segmentationn. As such, if we want to script this step, we have to use the code generated by the batch system. This will be discussed as part of <em>Advanced Image Analysis</em>, later in the course. For the time being, the older direct approach to normalisation is still available in the form of the <code class="docutils literal notranslate"><span class="pre">spm_normalise</span></code> and <code class="docutils literal notranslate"><span class="pre">spm_write_sn</span></code> functions. To begin with, we use the <code class="docutils literal notranslate"><span class="pre">spm_coreg</span></code> function to register the anatomical and mean functional images.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
-<span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
-<span class="n">spm_figure</span><span class="p">(</span><span class="s">&#39;GetWin&#39;</span><span class="p">,</span><span class="s">&#39;Graphics&#39;</span><span class="p">);</span><span class="w">                    </span><span class="c">% Open graphics window for plots</span>
-<span class="n">oldnorm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nb">fullfile</span><span class="p">(</span><span class="n">spm</span><span class="p">(</span><span class="s">&#39;dir&#39;</span><span class="p">),</span><span class="s">&#39;toolbox&#39;</span><span class="p">,</span><span class="s">&#39;OldNorm&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Path to OldNorm toolbox</span>
-<span class="nb">addpath</span><span class="p">(</span><span class="n">oldnorm</span><span class="p">);</span><span class="w">                                   </span><span class="c">% Add the Old Normalise functions</span>
-
-<span class="c">% Load data</span>
-<span class="n">func</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;arIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">          </span><span class="c">% Motion and slice timing corrected data </span>
-<span class="n">mfunc</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;meanIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">        </span><span class="c">% Mean functional (from realignment)</span>
-<span class="n">anat</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_anat.nii&#39;</span><span class="p">);</span><span class="w">            </span><span class="c">% Anatomical scan</span>
-
-<span class="c">% Coregister anat -&gt; mean</span>
-<span class="n">copts</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;coreg.estimate&#39;</span><span class="p">);</span>
-<span class="n">spm_coreg</span><span class="p">(</span><span class="n">mfunc</span><span class="p">,</span><span class="n">anat</span><span class="p">,</span><span class="n">copts</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_coreg (v7320)                           15:22:29 - 06/11/2023
-========================================================================
-</pre></div>
-</div>
-<img alt="_images/faf92e29201a1fd68aa799ec79bc26cf8af1047627566d8600a6290a272e1e99.png" src="_images/faf92e29201a1fd68aa799ec79bc26cf8af1047627566d8600a6290a272e1e99.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Printing &#39;Graphics&#39; figure to:
-  /home/martyn/Downloads/spm_2023Nov06.ps
-Completed                               :          15:22:34 - 06/11/2023
-</pre></div>
-</div>
-</div>
-</div>
-<p>Then we use the <code class="docutils literal notranslate"><span class="pre">spm_normalise</span></code> and <code class="docutils literal notranslate"><span class="pre">spm_write_sn</span></code> functions to estimate and apply the warpings to the functional data.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Normalise (estimate)</span>
-<span class="n">template</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="nb">fullfile</span><span class="p">(</span><span class="n">oldnorm</span><span class="p">,</span><span class="s">&#39;T1.nii&#39;</span><span class="p">));</span><span class="w">                  </span><span class="c">% T1 MNI template</span>
-<span class="n">eopts</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;old.normalise.estimate&#39;</span><span class="p">);</span>
-<span class="n">warps</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="n">spm_normalise</span><span class="p">(</span><span class="n">template</span><span class="p">,</span><span class="n">anat</span><span class="p">,</span><span class="s">&#39;warps.mat&#39;</span><span class="p">,[],[],</span><span class="n">eopts</span><span class="p">);</span>
-
-<span class="c">% Normalise (resample)</span>
-<span class="n">ropts</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;old.normalise.write&#39;</span><span class="p">);</span>
-<span class="n">spm_write_sn</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">warps</span><span class="p">,</span><span class="n">ropts</span><span class="p">);</span>
-<span class="n">spm_write_sn</span><span class="p">(</span><span class="n">anat</span><span class="p">,</span><span class="n">warps</span><span class="p">,</span><span class="n">ropts</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Smoothing by 0 &amp; 8mm..
-Coarse Affine Registration..
-Fine Affine Registration..
-3D CT Norm...
- iteration  1:  FWHM =  17.38 Var = 10.6076
- iteration  2:  FWHM =  13.49 Var = 2.08803
- iteration  3:  FWHM =  12.86 Var = 1.41758
- iteration  4:  FWHM =  12.69 Var = 1.25582
- iteration  5:  FWHM =  12.65 Var = 1.2107
- iteration  6:  FWHM =  12.64 Var = 1.19879
- iteration  7:  FWHM =  12.65 Var = 1.19538
- iteration  8:  FWHM =  12.65 Var = 1.19327
- iteration  9:  FWHM =  12.65 Var = 1.19175
- iteration 10:  FWHM =  12.64 Var = 1.19175
- iteration 11:  FWHM =  12.65 Var = 1.19068
- iteration 12:  FWHM =  12.64 Var = 1.19021
- iteration 13:  FWHM =  12.64 Var = 1.1893
- iteration 14:  FWHM =  12.63 Var = 1.18903
- iteration 15:  FWHM =  12.64 Var = 1.18759
- iteration 16:  FWHM =  12.63 Var = 1.18759
-</pre></div>
-</div>
-<img alt="_images/1bbdb0ed964f44d22b00ce4ecce26c626038ad9947b43de1d0252c7f2cddb472.png" src="_images/1bbdb0ed964f44d22b00ce4ecce26c626038ad9947b43de1d0252c7f2cddb472.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_write_sn (v4878)                        15:22:56 - 06/11/2023
-========================================================================
-Completed                               :          15:22:56 - 06/11/2023
-Printing &#39;Graphics&#39; figure to:
-  /home/martyn/Downloads/spm_2023Nov06.ps
-Saving Parameters..
-
-SPM12: spm_write_sn (v4878)                        15:22:56 - 06/11/2023
-========================================================================
-Completed                               :          15:23:20 - 06/11/2023
-
-SPM12: spm_write_sn (v4878)                        15:23:20 - 06/11/2023
-========================================================================
-Completed                               :          15:23:20 - 06/11/2023
-</pre></div>
-</div>
-</div>
-</div>
-<p>Finally, the results of the normalisation can be checked using <code class="docutils literal notranslate"><span class="pre">spm_check_registration</span></code></p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Check results</span>
-<span class="n">spm_check_registration</span><span class="p">(</span><span class="nb">fullfile</span><span class="p">(</span><span class="n">oldnorm</span><span class="p">,</span><span class="s">&#39;T1.nii&#39;</span><span class="p">),</span><span class="w"> </span><span class="k">...</span><span class="c"> % Template </span>
-<span class="w">                       </span><span class="s">&#39;warIA_preproc_func.nii,1&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="c"> % Normalised functional (volume 1)</span>
-<span class="w">                       </span><span class="s">&#39;wIA_preproc_anat.nii&#39;</span><span class="p">);</span><span class="w">        </span><span class="c">% Normalised anatomical</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_check_registration (v7759)              15:23:31 - 06/11/2023
-========================================================================
-Display /home/martyn/Documents/MATLAB/spm12/toolbox/OldNorm/T1.nii,1
-        warIA_preproc_func.nii,1
-        wIA_preproc_anat.nii,1
-</pre></div>
-</div>
-<img alt="_images/e9d3c5090f54996ee292b039980187138769ba4fe31bb05e2b0d903dd5ec71ed.png" src="_images/e9d3c5090f54996ee292b039980187138769ba4fe31bb05e2b0d903dd5ec71ed.png" />
-</div>
-</div>
-</section>
 </section>
 </section>
 
@@ -673,13 +551,9 @@ Display /home/martyn/Documents/MATLAB/spm12/toolbox/OldNorm/T1.nii,1
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-in-spm">Direct Normalisation in SPM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified Segmentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising Functional Data in SPM</a></li>
 </ul>
   </nav></div>
 
