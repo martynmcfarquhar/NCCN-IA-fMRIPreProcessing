@@ -387,11 +387,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-in-spm">Direct Normalisation in SPM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tissue-probability-maps-tpms">Tissue Probability Maps (TPMs)</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
@@ -443,9 +439,10 @@ document.write(`
 </section>
 <section id="unified-segmentation">
 <h2>Unified segmentation<a class="headerlink" href="#unified-segmentation" title="Permalink to this heading">#</a></h2>
-<p>In the unified segmentation approach, the generation of normalisation parameters is part of the same algorithm used to segment an anatomical image into the different tissue classes. As such, this is a form of <em>two-step</em> normalisation, but one where the generation of the deformation field is part of the segmentation process, rather than through direct registration to an MNI template.</p>
-<section id="gaussian-mixture-models-for-segmentation">
-<h3>Gaussian Mixture Models for Segmentation<a class="headerlink" href="#gaussian-mixture-models-for-segmentation" title="Permalink to this heading">#</a></h3>
+<p>In the unified segmentation approach, the generation of normalisation parameters is part of the same algorithm used to segment an anatomical image into the different tissue classes. As such, this is a form of <em>two-step</em> normalisation, but one where the generation of the deformation field is part of the segmentation process, rather than through direct registration to an MNI template. You can read more about how this works in the advanced drop-down below.</p>
+<div class="dropdown admonition">
+<p class="admonition-title">Advanced: Unified Segmentation</p>
+<h3 class="rubric" id="gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</h3>
 <p>To understand how this normalisation approach works, we need to first understand how tissue segmentation is performed. Given that different tissue types are fairly easy to discern using a standard T1-weighted structural scan, it stands to reason that the voxel intensities should provide some information about the tissue classes. For instance, white matter is generally brighter than grey matter and CSF tends to be the darkest. We can get a sense of this by plotting the probability distributions for the intensity values of different manually-defined tissue types, as shown in <a class="reference internal" href="#seg-tissues-fig"><span class="std std-numref">Fig. 15</span></a>.</p>
 <figure class="align-default" id="seg-tissues-fig">
 <a class="reference internal image-reference" href="_images/seg-tissues.png"><img alt="_images/seg-tissues.png" src="_images/seg-tissues.png" style="width: 500px;" /></a>
@@ -461,9 +458,7 @@ document.write(`
 </figcaption>
 </figure>
 <p>After estimating the shapes of all the Gaussian distributions, we could then assess the probability that a voxel belongs to a tissue class by calculating the probability of its intensity value across all the distributions. Whichever distribution gives the highest probability represents the most likely tissue class. However, as indicated earlier, one of the issues is that there is a degree of overlap between these distributions. This means that certain intensity values will have similar probabilities for multiple tissue types. This speaks to a more general issue known as the <em>partial volume effect</em>, where a voxel can contain multiple tissue types. As such, additional information is needed in order to make a decision about the tissues classification. This additional information comes in the form of <em>tissue probability maps</em> (TPMs). These are images that contain probabilities indicating how likely each voxel in the brain is to be a particular tissue type. These probabilities can be used to compliment the intensity information from the mixture model.</p>
-</section>
-<section id="tissue-probability-maps-tpms">
-<h3>Tissue Probability Maps (TPMs)<a class="headerlink" href="#tissue-probability-maps-tpms" title="Permalink to this heading">#</a></h3>
+<h3 class="rubric" id="tissue-probability-maps-tpms">Tissue Probability Maps (TPMs)</h3>
 <p>In terms of normalisation, the most important element of the unified segmentation algorithm is the TPMs. Examples of the TPMs included with SPM are given in <a class="reference internal" href="#tpm-fig"><span class="std std-numref">Fig. 17</span></a> for grey matter, white matter, CSF and air/background. These images are derived from the <a class="reference external" href="http://www.bmap.ucla.edu/portfolio/atlases/ICBM_Probabilistic_Atlases/">ICBM Probabilistic Atlases</a>, which are built from hundreds of scans of young healthy adults. As these scans combine information from across multiple individuals, they are defined in MNI space. As such, in order to use the TPMs to make decisions about an individual subject’s anatomy, the TPMs must be warped from MNI space into subject-space. As such, a deformation field that warps the TPMs from MNI-space to subject-space is created during the process of segmentation. Inverting this field provides the transformation from subject-space to MNI space that can be applied to normalise the functional data.</p>
 <figure class="align-default" id="tpm-fig">
 <a class="reference internal image-reference" href="_images/tpm.png"><img alt="_images/tpm.png" src="_images/tpm.png" style="width: 400px;" /></a>
@@ -471,7 +466,7 @@ document.write(`
 <p><span class="caption-number">Fig. 17 </span><span class="caption-text">Example of the tissue probability maps (TPMs) for grey matter, white matter, CSF and air.</span><a class="headerlink" href="#tpm-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-</section>
+</div>
 </section>
 <section id="anatomical-and-functional-registration">
 <h2>Anatomical and Functional Registration<a class="headerlink" href="#anatomical-and-functional-registration" title="Permalink to this heading">#</a></h2>
@@ -678,11 +673,7 @@ Display /home/martyn/Documents/MATLAB/spm12/toolbox/OldNorm/T1.nii,1
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#direct-normalisation-in-spm">Direct Normalisation in SPM</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-mixture-models-for-segmentation">Gaussian Mixture Models for Segmentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tissue-probability-maps-tpms">Tissue Probability Maps (TPMs)</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unified-segmentation">Unified segmentation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#anatomical-and-functional-registration">Anatomical and Functional Registration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalising-functional-data-in-spm">Normalising functional data in SPM</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
