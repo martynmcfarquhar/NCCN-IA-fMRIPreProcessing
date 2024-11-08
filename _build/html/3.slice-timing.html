@@ -386,11 +386,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-slice-timing-problem">The Slice Timing Problem</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-correction">Slice Timing Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-controversy">Slice Timing Controversy</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-in-spm">Slice-timing in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-in-spm">Slice-timing in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -442,50 +438,8 @@ document.write(`
 </section>
 <section id="slice-timing-in-spm">
 <h2>Slice-timing in SPM<a class="headerlink" href="#slice-timing-in-spm" title="Permalink to this heading">#</a></h2>
-<p>Now that we have discussed the theory of slice timing correction, we can examine how to perform this step using SPM.</p>
-<section id="using-the-graphical-batch-system">
-<h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
-<p>The video below will demonstrate how to perform slice timing correction on the motion-corrected functional data, using the SPM graphical interface.</p>
-<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=c1273482-26be-488d-9b18-d308de89f0df&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="4.Slice-Timing.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
-</section>
-<section id="using-matlab-code">
-<h3>Using MATLAB Code<a class="headerlink" href="#using-matlab-code" title="Permalink to this heading">#</a></h3>
-<p>As we saw for motion correction, it is also possible to perform slice timing correction in code using the <code class="docutils literal notranslate"><span class="pre">spm_slice_timing</span></code> function. For example, the code below shows how to replicate the functionality of the <code class="docutils literal notranslate"><span class="pre">Slice</span> <span class="pre">Timing</span></code> module from the video.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
-<span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
-
-<span class="c">% Load data</span>
-<span class="n">func</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;rIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Motion corrected data</span>
-
-<span class="c">% Slice timing parameters</span>
-<span class="n">nslices</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="mi">24</span><span class="p">;</span>
-<span class="n">TR</span><span class="w">          </span><span class="p">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
-<span class="n">TA</span><span class="w">          </span><span class="p">=</span><span class="w"> </span><span class="n">TR</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">TR</span><span class="o">/</span><span class="n">nslices</span><span class="p">);</span>
-<span class="n">sliceorder</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="mi">24</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">1</span><span class="p">;</span>
-<span class="n">refslice</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span>
-<span class="n">timing</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="n">TA</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">nslices</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">      </span><span class="c">% Time between slices</span>
-<span class="n">timing</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="n">TR</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">TA</span><span class="p">;</span><span class="w">                 </span><span class="c">% Time between last slice and next volume</span>
-<span class="w"> </span>
-<span class="c">% Slice timing correction</span>
-<span class="n">spm_slice_timing</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">sliceorder</span><span class="p">,</span><span class="n">refslice</span><span class="p">,</span><span class="n">timing</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_slice_timing (v6130)                    15:22:02 - 06/11/2023
-========================================================================
-Number of slices is...                  :                             24
-Time to Repeat (TR) is...               :                              2
-Parameters are specified as...          :                  slice indices
-Completed                               :          15:22:20 - 06/11/2023
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-</section>
+<p>Now that we have discussed the theory of slice timing correction, we can examine how to perform this step using SPM. The video below will demonstrate how to perform slice timing correction on the motion-corrected functional data, using the SPM graphical interface.</p>
+<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=c1273482-26be-488d-9b18-d308de89f0df&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="4.Slice-Timing.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div></section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -555,11 +509,7 @@ Completed                               :          15:22:20 - 06/11/2023
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-slice-timing-problem">The Slice Timing Problem</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-correction">Slice Timing Correction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-controversy">Slice Timing Controversy</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-in-spm">Slice-timing in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slice-timing-in-spm">Slice-timing in SPM</a></li>
 </ul>
   </nav></div>
 
