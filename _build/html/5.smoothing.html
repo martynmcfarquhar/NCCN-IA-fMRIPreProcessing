@@ -384,7 +384,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reducing-noise">Reducing Noise</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-normalisation">Improving Normalisation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-staistical-assumptions">Meeting the Staistical Assumptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-statistical-assumptions">Meeting the Statistical Assumptions</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
@@ -432,8 +432,8 @@ document.write(`
 <h3>Improving Normalisation<a class="headerlink" href="#improving-normalisation" title="Permalink to this heading">#</a></h3>
 <p>In addition to reducing noise, smoothing can help overcome some of the limitations of spatial normalisation. One of the most obvious visual effects of smoothing is that the anatomical boundaries within the brain become harder to discern. This is because the boundaries have been effectively spread in all directions. Although this may seem like an issue from a localisation perspective, it is actually an advantage because it helps overcome some of the limitations of spatial normalisation. Because normalisation will never be perfect, especially when constrained by regularisation, the anatomy of different subjects will never perfectly overlap. Because of this, regions of activation will also be slightly mismatched across subjects. However, by smoothing the data, we can even-out some of this discrepancy such that regions of activation better overlap across subjects. This consistency of overlap across subjects is very important for the statistical analysis of groups, meaning we are more likely to see effects if the activation pattern is consistent in terms of its spatial location. Although such consistency is improved by normalisation, it can be improved further by applying spatial smoothing. As such, smoothing also helps in terms of improving the <em>consistency</em> of anatomical alignment across subjects.</p>
 </section>
-<section id="meeting-the-staistical-assumptions">
-<h3>Meeting the Staistical Assumptions<a class="headerlink" href="#meeting-the-staistical-assumptions" title="Permalink to this heading">#</a></h3>
+<section id="meeting-the-statistical-assumptions">
+<h3>Meeting the Statistical Assumptions<a class="headerlink" href="#meeting-the-statistical-assumptions" title="Permalink to this heading">#</a></h3>
 <p>Beyond reducing noise and improving spatial consistency, smoothing is also necessary to meet some of the statistical assumptions we will be discussing later on the course. We will not go into much detail for now, but when we come to methods of <em>multiple comparisons correction</em> we will come across a technique known as <em>Gaussian Random Field Correction</em>. This is the primary correction technique used by SPM to calculate the statistical analysis results. In order for this correction to be valid, there is an assumed level of smoothness in the data. Although all fMRI images will contain an inherent amount of smoothness, in order to guarantee that the minimum smoothness assumption is met we can apply additional smoothing to the image. For this purpose alone, a kernel size of only twice the voxel dimensions is needed (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/18060720/">Mikl <em>et al.</em>, 2008</a>), though typically larger kernels will be used. Nevertheless, meeting these statistical assumptions provides the third main justification for smoothing fMRI data.</p>
 </section>
 </section>
@@ -539,7 +539,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-smooth-fmri-data">Why Smooth fMRI Data?</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reducing-noise">Reducing Noise</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-normalisation">Improving Normalisation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-staistical-assumptions">Meeting the Staistical Assumptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#meeting-the-statistical-assumptions">Meeting the Statistical Assumptions</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
