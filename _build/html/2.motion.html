@@ -384,7 +384,7 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-motion">Problems With Motion</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-time-series">Corruption of the Time Series</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-time-series">Corruption of the Time-series</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-signal-measurement">Corruption of the Signal Measurement</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correlated-with-the-task">Motion Correlated With the Task</a></li>
 </ul>
@@ -395,11 +395,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-motion-is-too-much">How Much Motion is Too Much?</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -418,8 +414,8 @@ document.write(`
 <h2>Problems With Motion<a class="headerlink" href="#problems-with-motion" title="Permalink to this heading">#</a></h2>
 <p>There are two main issues resulting from head motion. The first is that motion will cause individual voxels to suddenly contain data from a different part of the brain. The second is that motion can disrupt the recording of the signal by the scanner. Both these issues can be further compounded by motion that occurs more during certain conditions of the experimental task. In these case, the motion is <em>correlated</em> with the task, creating a serious confound in the data.</p>
 <section id="corruption-of-the-time-series">
-<h3>Corruption of the Time Series<a class="headerlink" href="#corruption-of-the-time-series" title="Permalink to this heading">#</a></h3>
-<p>One of the main issue with motion is that the time series at an individual voxel is no longer a continuous measure of a specific point in the brain. Instead, the time series measures <em>several</em> points in the brain over time. Where this is particularly problematic is at tissue boundaries. For instance, motion may causes a voxel to contain signal from both <em>inside</em> and <em>outside</em> the head, or from both <em>inside</em> and <em>outside</em> the ventricles. In these cases, the change in tissue type will cause a sudden shift in signal intensity that may be misconstrued as true brain activity. This is shown in <a class="reference internal" href="#mot-spikes-fig"><span class="std std-numref">Fig. 4</span></a>, where 20 volumes in the middle of a functional series have been artificially shifted to the right and then back again. Without any form of correction, the sudden change of intensity in the highlighted voxel would likely be identified as true brain activation by the statistical analysis.</p>
+<h3>Corruption of the Time-series<a class="headerlink" href="#corruption-of-the-time-series" title="Permalink to this heading">#</a></h3>
+<p>One of the main issue with motion is that the time series at an individual voxel is no longer a continuous measure of a specific point in the brain. Instead, the time-series measures <em>several</em> points in the brain over time. Where this is particularly problematic is at tissue boundaries. For instance, motion may causes a voxel to contain signal from both <em>inside</em> and <em>outside</em> the head, or from both <em>inside</em> and <em>outside</em> the ventricles. In these cases, the change in tissue type will cause a sudden shift in signal intensity that may be misconstrued as true brain activity. This is shown in <a class="reference internal" href="#mot-spikes-fig"><span class="std std-numref">Fig. 4</span></a>, where 20 volumes in the middle of a functional series have been artificially shifted to the right and then back again.</p>
 <figure class="align-default" id="mot-spikes-fig">
 <a class="reference internal image-reference" href="_images/mot-spikes.png"><img alt="_images/mot-spikes.png" src="_images/mot-spikes.png" style="width: 600px;" /></a>
 <figcaption>
@@ -496,55 +492,8 @@ document.write(`
 </section>
 <section id="motion-correction-in-spm">
 <h2>Motion Correction in SPM<a class="headerlink" href="#motion-correction-in-spm" title="Permalink to this heading">#</a></h2>
-<p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM.</p>
-<section id="using-the-graphical-batch-system">
-<h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
-<p>The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
-<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
-</section>
-<section id="using-matlab-code">
-<h3>Using MATLAB Code<a class="headerlink" href="#using-matlab-code" title="Permalink to this heading">#</a></h3>
-<p>Beyond the graphical interface, it is also possible to perform motion correction in code using the <code class="docutils literal notranslate"><span class="pre">spm_realign</span></code> and <code class="docutils literal notranslate"><span class="pre">spm_reslice</span></code> functions. For example, the code below shows how to replicate the functionality of the <code class="docutils literal notranslate"><span class="pre">Realign:</span> <span class="pre">Estimate</span> <span class="pre">&amp;</span> <span class="pre">Reslice</span></code> module from the video.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
-<span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
-<span class="n">spm_figure</span><span class="p">(</span><span class="s">&#39;GetWin&#39;</span><span class="p">,</span><span class="s">&#39;Graphics&#39;</span><span class="p">);</span><span class="w">                  </span><span class="c">% Open graphics window for plots</span>
-
-<span class="c">% Motion correction (estimate)</span>
-<span class="n">func</span><span class="w">      </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_func.nii&#39;</span><span class="p">);</span>
-<span class="n">eopts</span><span class="w">     </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.estimate&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Default options struct</span>
-<span class="n">eopts</span><span class="p">.</span><span class="n">rtm</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">                                    </span><span class="c">% Set to 0 for 1-pass correction</span>
-
-<span class="n">spm_realign</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="n">eopts</span><span class="p">);</span><span class="w">                          </span>
-
-<span class="c">% Motion correction (resample)                     </span>
-<span class="n">mcfunc</span><span class="w">       </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;IA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w">     </span>
-<span class="n">ropts</span><span class="w">        </span><span class="p">=</span><span class="w"> </span><span class="n">spm_get_defaults</span><span class="p">(</span><span class="s">&#39;realign.write&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% Default options struct  </span>
-<span class="n">ropts</span><span class="p">.</span><span class="n">interp</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span><span class="w">                                 </span><span class="c">% 4th-degree B-spline</span>
-<span class="n">ropts</span><span class="p">.</span><span class="n">which</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="w"> </span><span class="mi">1</span><span class="p">];</span><span class="w">                             </span><span class="c">% [2 1] = resample all volumes (2) and create mean (1)</span>
-
-<span class="n">spm_reslice</span><span class="p">(</span><span class="n">mcfunc</span><span class="p">,</span><span class="n">ropts</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/cb6f1fa9706b94e384443b99a0a53891489416860e3b67ca7aff1d45648d1052.png" src="_images/cb6f1fa9706b94e384443b99a0a53891489416860e3b67ca7aff1d45648d1052.png" />
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_realign (v7141)                         15:21:01 - 06/11/2023
-========================================================================
-Printing &#39;Graphics&#39; figure to:
-  /home/martyn/Downloads/spm_2023Nov06.ps
-Completed                               :          15:21:33 - 06/11/2023
-
-SPM12: spm_reslice (v7141)                         15:21:33 - 06/11/2023
-========================================================================
-Completed                               :          15:21:51 - 06/11/2023
-</pre></div>
-</div>
-</div>
-</div>
-</section>
-</section>
+<p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM. The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
+<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div></section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -612,7 +561,7 @@ Completed                               :          15:21:51 - 06/11/2023
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problems-with-motion">Problems With Motion</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-time-series">Corruption of the Time Series</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-time-series">Corruption of the Time-series</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#corruption-of-the-signal-measurement">Corruption of the Signal Measurement</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correlated-with-the-task">Motion Correlated With the Task</a></li>
 </ul>
@@ -623,11 +572,7 @@ Completed                               :          15:21:51 - 06/11/2023
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-motion-is-too-much">How Much Motion is Too Much?</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
   </nav></div>
 
