@@ -394,6 +394,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resampling-the-fmri-data">Resampling the fMRI Data</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -486,12 +487,13 @@ document.write(`
 <p><span class="caption-number">Fig. 9 </span><span class="caption-text">Example of motion parameters containing large spikes. In this example, the spikes are not numerous enough to suggest discarding the scan.</span><a class="headerlink" href="#trans-spikes-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<h2 class="rubric" id="motion-correction-in-spm">Motion Correction in SPM</h2>
-<p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM. The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
-<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
 </div>
 </section>
 </section>
+<section id="motion-correction-in-spm">
+<h2>Motion Correction in SPM<a class="headerlink" href="#motion-correction-in-spm" title="Permalink to this heading">#</a></h2>
+<p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM. The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
+<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div></section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -569,6 +571,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resampling-the-fmri-data">Resampling the fMRI Data</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
   </nav></div>
 
