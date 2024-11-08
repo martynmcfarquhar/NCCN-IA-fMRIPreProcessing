@@ -389,11 +389,7 @@ document.write(`
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-to-smooth-fmri-data">How Much to Smooth fMRI Data?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -471,48 +467,8 @@ document.write(`
 </section>
 <section id="smoothing-functional-data-in-spm">
 <h2>Smoothing Functional Data in SPM<a class="headerlink" href="#smoothing-functional-data-in-spm" title="Permalink to this heading">#</a></h2>
-<p>Now that we have discussed the theory of spatial smoothing, we can examine how to perform this step using SPM.</p>
-<section id="using-the-graphical-batch-system">
-<h3>Using the Graphical Batch System<a class="headerlink" href="#using-the-graphical-batch-system" title="Permalink to this heading">#</a></h3>
-<p>The video below will demonstrate how to smooth the realigned, slice-timing-corrected and normalised functional data, using the SPM graphical interface.</p>
+<p>Now that we have discussed the theory of spatial smoothing, we can examine how to perform this step using SPM. The video below will demonstrate how to smooth the realigned, slice-timing-corrected and normalised functional data, using the SPM graphical interface.</p>
 <div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=8bbcc80c-36fb-4cf4-96d4-ad5c0d79e832&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="6.Smoothing.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
-</section>
-<section id="using-matlab-code">
-<h3>Using MATLAB Code<a class="headerlink" href="#using-matlab-code" title="Permalink to this heading">#</a></h3>
-<p>As with previous steps, it is also possible to perform spatial smoothing in code using the <code class="docutils literal notranslate"><span class="pre">spm_smooth</span></code> function. The code below shows how to replicate the functionality of the <code class="docutils literal notranslate"><span class="pre">Smooth</span></code> module from the video.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="c">% Launch SPM</span>
-<span class="n">spm</span><span class="p">(</span><span class="s">&#39;defaults&#39;</span><span class="p">,</span><span class="s">&#39;FMRI&#39;</span><span class="p">);</span>
-
-<span class="c">% Load data</span>
-<span class="n">func</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">spm_vol</span><span class="p">(</span><span class="s">&#39;warIA_preproc_func.nii&#39;</span><span class="p">);</span><span class="w"> </span><span class="c">% motion, slice-timing and normalised</span>
-
-<span class="c">% Smooth with a kernel of [8 8 8]</span>
-<span class="n">spm_smooth</span><span class="p">(</span><span class="n">func</span><span class="p">,</span><span class="s">&#39;swarIA_preproc_func.nii&#39;</span><span class="p">,[</span><span class="mi">8</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="mi">8</span><span class="p">]);</span>
-</pre></div>
-</div>
-</div>
-</div>
-<p>We can then check the results using</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-matlab notranslate"><div class="highlight"><pre><span></span><span class="n">spm_check_registration</span><span class="p">(</span><span class="s">&#39;warIA_preproc_func.nii,1&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">...</span><span class="c"> % Unsmoothed</span>
-<span class="w">                       </span><span class="s">&#39;swarIA_preproc_func.nii,1&#39;</span><span class="p">)</span><span class="w">    </span><span class="c">% Smoothed</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>SPM12: spm_check_registration (v7759)              11:34:53 - 07/11/2023
-========================================================================
-Display warIA_preproc_func.nii,1
-        swarIA_preproc_func.nii,1
-</pre></div>
-</div>
-<img alt="_images/7f4e74c2c4cbe3cdc7a824d9ec5296424178e3a0564590e38791f45f338c9406.png" src="_images/7f4e74c2c4cbe3cdc7a824d9ec5296424178e3a0564590e38791f45f338c9406.png" />
-</div>
-</div>
-</section>
 </section>
 </section>
 
@@ -588,11 +544,7 @@ Display warIA_preproc_func.nii,1
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-kernels">Gaussian Kernels</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-to-smooth-fmri-data">How Much to Smooth fMRI Data?</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-graphical-batch-system">Using the Graphical Batch System</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-matlab-code">Using MATLAB Code</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#smoothing-functional-data-in-spm">Smoothing Functional Data in SPM</a></li>
 </ul>
   </nav></div>
 
