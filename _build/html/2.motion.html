@@ -392,10 +392,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-theory">Motion Correction Theory</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-parameters">Motion Parameters</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resampling-the-fmri-data">Resampling the fMRI Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-motion-is-too-much">How Much Motion is Too Much?</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
             </nav>
         </div>
@@ -468,9 +466,9 @@ document.write(`
 <section id="resampling-the-fmri-data">
 <h3>Resampling the fMRI Data<a class="headerlink" href="#resampling-the-fmri-data" title="Permalink to this heading">#</a></h3>
 <p>Once all the <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices have been estimated, it is typical to turn these world-space transformations into voxel-space transformations. This effectively <em>applies</em> the motion correction to the data by resampling each volume to match the target. Resampling at this stage is particularly important for slice-timing correction, which is our next pre-processing step. However, it is not always advisable to resample the data at this stage, as we will discussed at the end of this lesson. In terms of the interpolation itself, higher-order B-spline methods are generally preferred, as evidence suggests that linear methods can introduce greater errors (<a class="reference external" href="https://pubmed.ncbi.nlm.nih.gov/9294580/">Ostuni et al., 1997</a>). In principle, we could choose the highest-order interpolation available to us, but the gains in accuracy will likely be undone once we perform smoothing as a final pre-processing step. As such, SPM defaults to 4th-degree B-spline interpolation as a reasonable compromise.</p>
-</section>
-<section id="how-much-motion-is-too-much">
-<h3>How Much Motion is Too Much?<a class="headerlink" href="#how-much-motion-is-too-much" title="Permalink to this heading">#</a></h3>
+<div class="dropdown admonition">
+<p class="admonition-title">Advanced: How Much Motion is Too Much?</p>
+<h3 class="rubric" id="how-much-motion-is-too-much">How Much Motion is Too Much?</h3>
 <p>Considering the fact that motion is an unavoidable part of fMRI data, but is also potentially very damaging, how much motion should we allow before deciding a scan is too corrupted to use? This is an obvious question that is, unfortunately, difficult to answer. Generally, volume-to-volume motion is more damaging than steady and slow motion, meaning that motion <em>spikes</em> are most concerning. According to <a class="reference external" href="https://www.librarysearch.manchester.ac.uk/permalink/44MAN_INST/bofker/alma992975905221601631">Poldrack, Mumford and Nichols (2011)</a>, a sudden shift of more than <span class="math notranslate nohighlight">\(\frac{1}{2}\)</span> a voxel should be cause for concern. For instance, if the voxels were 3mm isotropic then a spike of &gt; 1.5mm in the <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> or <span class="math notranslate nohighlight">\(z\)</span> planes would be a concern. This is similar for rotations, where we can calculate the angle for a distance of 1.5mm using the formula for the <a class="reference external" href="https://en.wikipedia.org/wiki/Arc_length"><em>arc length</em></a> of a circle</p>
 <div class="math notranslate nohighlight">
 \[
@@ -488,12 +486,12 @@ document.write(`
 <p><span class="caption-number">Fig. 9 </span><span class="caption-text">Example of motion parameters containing large spikes. In this example, the spikes are not numerous enough to suggest discarding the scan.</span><a class="headerlink" href="#trans-spikes-fig" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-</section>
-</section>
-<section id="motion-correction-in-spm">
-<h2>Motion Correction in SPM<a class="headerlink" href="#motion-correction-in-spm" title="Permalink to this heading">#</a></h2>
+<h2 class="rubric" id="motion-correction-in-spm">Motion Correction in SPM</h2>
 <p>Now that we have discussed the theory of motion correction, we can examine how to perform this step using SPM. The video below will demonstrate how to perform motion correction using the SPM graphical interface. Note that the default approach in SPM is a <em>two-pass</em> procedure, where the images are initially aligned to the first volume. A mean image is then created and a second pass is performed to align the volumes with the mean. The final <span class="math notranslate nohighlight">\(\mathbf{T}_{t}\)</span> matrices therefore represent a combination of the transformations needed for both steps. The idea is that registration can be more finely tuned using this second pass, although, realistically, it will not make a huge difference. Importantly, we need to save this mean image for use in a later pre-processing step.</p>
-<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div></section>
+<div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://livemanchesterac.sharepoint.com/sites/UOM-FBMH-MSc-NCCN/_layouts/15/embed.aspx?UniqueId=27a69ee8-454c-4fe5-a640-e172328d949f&embed=%7B%22hvm%22%3Atrue%2C%22ust%22%3Atrue%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="3.Motion-Correction.mov" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
+</div>
+</section>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -569,10 +567,8 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-theory">Motion Correction Theory</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-parameters">Motion Parameters</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#resampling-the-fmri-data">Resampling the fMRI Data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-much-motion-is-too-much">How Much Motion is Too Much?</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motion-correction-in-spm">Motion Correction in SPM</a></li>
 </ul>
   </nav></div>
 
